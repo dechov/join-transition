@@ -1,6 +1,6 @@
 {
   "name": "join-transition",
-  "version": "1.0.17",
+  "version": "1.1.0",
   "description": "React component for transitioning values and sets of values",
   "main": "./dist/index.js",
   "scripts": {
