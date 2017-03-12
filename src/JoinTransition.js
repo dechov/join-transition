@@ -34,6 +34,12 @@ class JoinTransition extends Component {
     this.id = nextId++
   }
 
+  componentWillUnmount() {
+    if (this.transition != null) {
+      this.transition.selection().interrupt(`JoinTransition-${this.id}`)
+    }
+  }
+
   componentWillReceiveProps(props) {
     if (typeof props.shouldTransition === "function" ? !props.shouldTransition(this.props.values, props.values) : !props.shouldTransition) {
       return this.setValues(props.values)
@@ -87,7 +93,7 @@ class JoinTransition extends Component {
     }
     else return this.setValues(props.values)
 
-    this.setState({ values: interpolator(0), prevValues: this.state.values })
+    this.setState({ values: interpolator(0), prevValues: interpolator(0) })
     this.transition
       .tween("values", () => t => {
         this.setState({ values: interpolator(t), prevValues: this.state.values })
@@ -106,7 +112,7 @@ JoinTransition.propTypes = {
   children: PropTypes.func.isRequired,
 
   interpolate: PropTypes.func,
-  shouldTransition: PropTypes.func,
+  shouldTransition: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
   queue: PropTypes.bool,
   duration: PropTypes.number,
   ease: PropTypes.func,
@@ -134,5 +140,4 @@ JoinTransition.defaultProps = {
   orderBy: null,
 }
 
-// export default JoinTransition
-module.exports = JoinTransition
+export default JoinTransition

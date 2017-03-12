@@ -1,6 +1,6 @@
 {
   "name": "join-transition",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "React component for transitioning values and sets of values",
   "main": "./dist/index.js",
   "scripts": {
@@ -10,6 +10,13 @@
   },
   "author": "Paul Dechov (paul@two-n.com)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/two-n/join-transition.git"
+  },
+  "homepage": "https://github.com/two-n/join-transition",
+  "bugs": "https://github.com/two-n/join-transition/issues",
+  "keywords": ["animation", "interpolation", "javascript"],
   "dependencies": {
     "d3-interpolate": "1",
     "d3-transition": "1",
