@@ -16,9 +16,9 @@ export default (A=[], B=[], options={}) => {
 
   const key = options.key != null ? options.key : "id",
         keyTo = options.keyTo != null ? options.keyTo : key,
-        keyToFn = typeof options.keyTo === "function" ? keyTo : d => d[keyTo],
+        keyToFn = typeof keyTo === "function" ? keyTo : d => d[keyTo],
         keyFrom = options.keyFrom != null ? options.keyFrom : key,
-        keyFromFn = typeof options.keyFrom === "function" ? keyFrom : d => d[keyFrom]
+        keyFromFn = typeof keyFrom === "function" ? keyFrom : d => d[keyFrom]
 
   const groupA = groupBy(A, keyTo),
         groupB = groupBy(B, keyFrom),
@@ -30,7 +30,7 @@ export default (A=[], B=[], options={}) => {
 
   for (let bIndex = 0; bIndex < updated.length; bIndex++) {
     const b = updated[bIndex],
-          group = groupA[b[keyFrom]]
+          group = groupA[keyFromFn(b)]
     for (let aIndex = 0; aIndex < group.length; aIndex++) {
       const a = group[aIndex]
       updating.push(a)
