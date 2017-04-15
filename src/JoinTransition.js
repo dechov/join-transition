@@ -1,8 +1,9 @@
-import { Component, PropTypes } from "react"
-import { transition } from "d3-transition"
-import { interpolate } from "d3-interpolate"
+import { Component } from 'react'
+import PropTypes from 'prop-types'
+import { transition } from 'd3-transition'
+import { interpolate } from 'd3-interpolate'
 
-import datajoin from "./datajoin"
+import datajoin from './datajoin'
 
 
 const extent = (collection, accessor) => {
@@ -20,7 +21,41 @@ const zip = (a, b) => a.map((d, i) => [d, b[i]])
 let nextId = 0
 
 
-class JoinTransition extends Component {
+export default class JoinTransition extends Component {
+
+  static propTypes = {
+    values: PropTypes.any.isRequired,
+    children: PropTypes.func.isRequired,
+
+    interpolate: PropTypes.func,
+    shouldTransition: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
+    queue: PropTypes.bool,
+    duration: PropTypes.number,
+    ease: PropTypes.func,
+    onTransitionEnd: PropTypes.func,
+
+    identify: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+    enter: PropTypes.oneOfType([PropTypes.any, PropTypes.func]),
+    exit: PropTypes.oneOfType([PropTypes.any, PropTypes.func]),
+    enterOrExit: PropTypes.oneOfType([PropTypes.any, PropTypes.func]),
+    stagger: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
+    orderBy: PropTypes.func,
+  }
+
+  static defaultProps = {
+    interpolate,
+    shouldTransition: (a, b) => a !== b,
+    queue: false,
+    duration: null,
+    ease: null,
+
+    identify: 'id',
+    enter: null,
+    exit: null,
+    stagger: 0,
+    orderBy: null,
+  }
+
   render() {
     return this.props.children(this.state.values, this.state.prevValues)
   }
@@ -41,7 +76,7 @@ class JoinTransition extends Component {
   }
 
   componentWillReceiveProps(props) {
-    if (typeof props.shouldTransition === "function" ? !props.shouldTransition(this.props.values, props.values) : !props.shouldTransition) {
+    if (typeof props.shouldTransition === 'function' ? !props.shouldTransition(this.props.values, props.values) : !props.shouldTransition) {
       return this.setValues(props.values)
     }
 
@@ -59,8 +94,8 @@ class JoinTransition extends Component {
 
     const enterValue = props.enter || props.enterOrExit
     const exitValue = props.exit || props.enterOrExit
-    const enterFrom = typeof enterValue === "function" ? enterValue : d => ({ ...d, ...enterValue })
-    const exitTo = typeof exitValue === "function" ? exitValue : d => ({ ...d, ...exitValue })
+    const enterFrom = typeof enterValue === 'function' ? enterValue : d => ({ ...d, ...enterValue })
+    const exitTo = typeof exitValue === 'function' ? exitValue : d => ({ ...d, ...exitValue })
 
     let interpolator
     
@@ -70,7 +105,7 @@ class JoinTransition extends Component {
       })
       const interpolators = zip(before, after).map(([from, to]) => props.interpolate(from, to, interpolate))
 
-      const staggerAmount = typeof props.stagger === "function" ? props.stagger(before, after) : props.stagger,
+      const staggerAmount = typeof props.stagger === 'function' ? props.stagger(before, after) : props.stagger,
             staggerCoefficient = 1 / (1 - staggerAmount),
             staggerRange = props.orderBy ? extent(after, props.orderBy) : [0, after.length - 1],
             staggerRangeSize = staggerRange[1] - staggerRange[0],
@@ -95,10 +130,10 @@ class JoinTransition extends Component {
 
     this.setState({ values: interpolator(0), prevValues: interpolator(0) })
     this.transition
-      .tween("values", () => t => {
+      .tween('values', () => t => {
         this.setState({ values: interpolator(t), prevValues: this.state.values })
       })
-      .on("end", () => {
+      .on('end', () => {
         this.setValues(props.values)
         this.transition = null
         props.onTransitionEnd && props.onTransitionEnd()
@@ -106,38 +141,3 @@ class JoinTransition extends Component {
   }
 
 }
-
-JoinTransition.propTypes = {
-  values: PropTypes.any.isRequired,
-  children: PropTypes.func.isRequired,
-
-  interpolate: PropTypes.func,
-  shouldTransition: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
-  queue: PropTypes.bool,
-  duration: PropTypes.number,
-  ease: PropTypes.func,
-  onTransitionEnd: PropTypes.func,
-
-  identify: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-  enter: PropTypes.oneOfType([PropTypes.any, PropTypes.func]),
-  exit: PropTypes.oneOfType([PropTypes.any, PropTypes.func]),
-  enterOrExit: PropTypes.oneOfType([PropTypes.any, PropTypes.func]),
-  stagger: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
-  orderBy: PropTypes.func,
-}
-
-JoinTransition.defaultProps = {
-  interpolate,
-  shouldTransition: (a, b) => a !== b,
-  queue: false,
-  duration: null,
-  ease: null,
-
-  identify: "id",
-  enter: null,
-  exit: null,
-  stagger: 0,
-  orderBy: null,
-}
-
-export default JoinTransition
